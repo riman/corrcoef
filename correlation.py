@@ -44,7 +44,7 @@ def main(argv):
 
     for n in range(cols):
         if n < cols - 2:
-            arr1 = normalizedData.iloc[:, n+1].array
+            arr1 = normalizedData.iloc[:, 1].array
             #print(arr1)
             arr2 = normalizedData.iloc[:, n+2].array
             #print(arr2)
@@ -52,6 +52,10 @@ def main(argv):
 
             print(corrCoef)
 
+    arr1 = normalizedData.iloc[:, 3].array
+    arr2 = normalizedData.iloc[:, 4].array
+    corrCoef = np.corrcoef(arr1, arr2)
+    print(corrCoef)
 
 
 
