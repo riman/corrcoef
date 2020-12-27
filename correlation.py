@@ -4,6 +4,7 @@ import statistics as stat
 import numpy as np
 import sys
 import argparse
+import datetime
 
 
 DATE_COLUMN = 'Date'
@@ -27,19 +28,19 @@ def normalizeData(data):
             dd = pd.merge(dd, data[n+1], how = 'inner', on = [DATE_COLUMN])
     return dd
 
+def sliceData(data, year):
+    dateBeginning = datetime.date(year, 1, 1)
+    dateEnding = datetime.date(year, 12, 31)
+    return data[(data[DATE_COLUMN] >= np.datetime64(dateBeginning)) & (data[DATE_COLUMN] <= np.datetime64(dateEnding))]
+
 def readSheetData(excelFile, sheet):
     df = pd.read_excel(excelFile, sheet)
     return pd.DataFrame(df, columns = [DATE_COLUMN, PRICE_COLUMN])
 
-def main(argv):
-    optParser = argparse.ArgumentParser(description = 'Indexes correlation calculator')
-    optParser.add_argument('-i', '--inputFile')
-    args = optParser.parse_args(argv)
-
-    data = loadFile(args.inputFile)
-    normalizedData = normalizeData(data)
+def calculateCorrelation(normalizedData):
     cols = len(normalizedData.columns)
 
+    print('Data for calculation')
     print(normalizedData)
     arrs = []
 
@@ -49,6 +50,23 @@ def main(argv):
         arrs.append(normalizedData.iloc[:, n].array)
     corrCoef = np.corrcoef(arrs)
     print(corrCoef)
+    print('\n\n\n')
+
+def main(argv):
+    optParser = argparse.ArgumentParser(description = 'Indexes correlation calculator')
+    optParser.add_argument('-i', '--inputFile')
+    args = optParser.parse_args(argv)
+
+    data = loadFile(args.inputFile)
+    normalizedData = normalizeData(data)
+    print('Overall')
+    calculateCorrelation(normalizedData)
+
+    print('Yearly data')
+    for year in range(2015, 2021):
+        print(year)
+        slicedData = sliceData(normalizedData, year)
+        calculateCorrelation(slicedData)
 
 
 
