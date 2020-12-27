@@ -8,7 +8,10 @@ import datetime
 
 
 DATE_COLUMN = 'Date'
+DATE_COLUMN_INDEX = 0
 PRICE_COLUMN = 'Price'
+DATA_YEAR_BEG = 2015
+DATA_YEAR_END = 2020
 
 def loadFile(dataFile):
     xlsx = pd.ExcelFile(dataFile, engine='openpyxl')
@@ -22,7 +25,7 @@ def loadFile(dataFile):
 def normalizeData(data):
     dd = None
     for n in range(len(data)):
-        if n== 0:
+        if n == DATE_COLUMN_INDEX:
             dd = pd.merge(data[n], data[n+1], how = 'inner', on = [DATE_COLUMN])
         elif n < len(data) - 1:
             dd = pd.merge(dd, data[n+1], how = 'inner', on = [DATE_COLUMN])
@@ -45,7 +48,7 @@ def calculateCorrelation(normalizedData):
     arrs = []
 
     for n in range(cols):
-        if n == 0:
+        if n == DATE_COLUMN_INDEX:
             continue
         arrs.append(normalizedData.iloc[:, n].array)
     corrCoef = np.corrcoef(arrs)
@@ -63,7 +66,7 @@ def main(argv):
     calculateCorrelation(normalizedData)
 
     print('Yearly data')
-    for year in range(2015, 2021):
+    for year in range(DATA_YEAR_BEG, DATA_YEAR_END + 1):
         print(year)
         slicedData = sliceData(normalizedData, year)
         calculateCorrelation(slicedData)
