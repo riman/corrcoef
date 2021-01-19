@@ -40,11 +40,12 @@ def readSheetData(excelFile, sheet):
     df = pd.read_excel(excelFile, sheet)
     return pd.DataFrame(df, columns = [DATE_COLUMN, PRICE_COLUMN])
 
-def calculateCorrelation(normalizedData):
+def calculateCorrelation(longVersion, normalizedData):
     cols = len(normalizedData.columns)
 
-    print('Data for calculation')
-    print(normalizedData)
+    if longVersion != None:
+        print('Data for calculation')
+        print(normalizedData)
     arrs = []
 
     for n in range(cols):
@@ -58,18 +59,19 @@ def calculateCorrelation(normalizedData):
 def main(argv):
     optParser = argparse.ArgumentParser(description = 'Indexes correlation calculator')
     optParser.add_argument('-i', '--inputFile')
+    optParser.add_argument('-l', '--longVersion')
     args = optParser.parse_args(argv)
 
     data = loadFile(args.inputFile)
     normalizedData = normalizeData(data)
     print('Overall')
-    calculateCorrelation(normalizedData)
+    calculateCorrelation(args.longVersion, normalizedData)
 
     print('Yearly data')
     for year in range(DATA_YEAR_BEG, DATA_YEAR_END + 1):
         print(year)
         slicedData = sliceData(normalizedData, year)
-        calculateCorrelation(slicedData)
+        calculateCorrelation(args.longVersion, slicedData)
 
 
 
